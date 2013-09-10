@@ -28,24 +28,27 @@ if __name__=="__main__":
     sys.path.append("%s/lib" % os.path.dirname(os.path.realpath(__file__)))
 
 from datetime         import datetime
-from Adafruit_CharLCD import Adafruit_CharLCD
 from configuration    import CONFIGURATION
+import _lcdisplays
 import threading, time
-
-## disable GPIO warnings
-import RPi.GPIO as GPIO
-GPIO.setwarnings(False)
 
 class Display(threading.Thread):
     """A wrapper class for the connected LC display."""
     
-    def __init__(self):
-        """Initializes the Display."""
+    def __init__(self, autostart=True):
+        """Initializes the Display.
+        
+        :param Bool autostart:    Defines, if the display should start to set messages automatically.
+                                  Do not modify this parameter, unless you really know, what you are
+                                  doing.
+        """
         super(Display, self).__init__()
         
-        self._lcd = Adafruit_CharLCD(pin_rs=CONFIGURATION["pin_rs"],
-                                     pin_e=CONFIGURATION["pin_e"],
-                                     pins_db=CONFIGURATION["pins_db"]
+        lcdclass = getattr(_lcdisplays, CONFIGURATION["displaytype"])
+        
+        self._lcd = lcdclass(pin_rs=CONFIGURATION["pin_rs"],
+                             pin_e=CONFIGURATION["pin_e"],
+                             pins_db=CONFIGURATION["pins_db"]
         )
         
         ## read the Display configuration
@@ -61,7 +64,9 @@ class Display(threading.Thread):
         
         ## start the Thread
         self._displayMessages = True
-        self.start()
+        
+        if autostart:
+            self.start()
     
     def run(self):
         """Runs the Display thread until the Display is :py:meth:`Display.shutdown`."""
@@ -80,7 +85,10 @@ class Display(threading.Thread):
         :param List messages:   A List of messages that will be displayed.
         """
         self._lock.acquire()
-        self._messages = messages
+        ## set the messages to the number of lines the physical display has
+        self._messages = messages[:self._height-1]
+        for idx in xrange(len(self._messages) - 1):
+            self._messages[idx] = "%s" % self._messages[idx][:self._width]
         self._lock.release()
     
     def _show_message(self):
@@ -88,23 +96,18 @@ class Display(threading.Thread):
         
         self._lock.acquire()
         self._lcd.clear()
-        self._lcd.message(datetime.now().strftime("%b %d  %H:%M:%S\n"))
-        for line in self._messages:
-            self._lcd.message(line[:self._width])
+        curtime = ("%s UTC" % datetime.now().strftime("%b %d  %H:%M:%S UTC"))[:self._width]
+        self._lcd.message(("%s\n" % curtime))
+        for message in self._messages:
+            self._lcd.message("%s\n" % message)
         self._lock.release()
 
 ## makes the display script callable directly
 if __name__=="__main__":
-    ## initialize the display
-    display = Display()
-    
     ## read the script arguments and use them as messages
     messages = sys.argv[1:]
-    print "\n".join(messages)
     
     ## set the messages and force the display to show it directly
+    display = Display(autostart=False)
     display.write_message(messages)
     display._show_message()
-
-    ## shut down the spawned thread
-    display.shutdown()
