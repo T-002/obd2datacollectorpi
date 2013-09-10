@@ -15,5 +15,5 @@ THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR I
 
 Contributors
 ------------
-`Christian Schwarz <https://github.com/T-002>`_
+`Christian Schwarz <https://github.com/T-002>`_,
 `Thomas Uhde <https://github.com/acidix>`_
