@@ -99,7 +99,7 @@ if __name__=="__main__":
     display = Display()
     
     ## read the script arguments and use them as messages
-    messages = sys.argv
+    messages = sys.argv[1:]
     print "\n".join(messages)
     
     ## set the messages and force the display to show it directly
