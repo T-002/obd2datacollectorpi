@@ -1,0 +1,19 @@
+# Device to save data on
+USBSTICK="/dev/sda1"
+
+# Where to expect the CAN BUS adapter
+CANADAPTER="/dev/ttyUSB0"
+
+# do not edit
+RUNTIME=`hwclock -r | sed -e 's/\ /-/g' | sed -e 's/:/-/g'`
+
+# workdir of the obd2datacollectorpi collector
+WORKDIR="/opt/obd2datacollectorpi"
+
+# logfile
+LOG="$WORKDIR/log/$RUNTIME.log"
+
+# data directory
+DATADIR="data/$RUNTIME"
+
+export USBSTICK CANADAPTER WORKDIR RUNDIR LOGFILE DATADIR
