@@ -100,6 +100,7 @@ if __name__=="__main__":
     
     ## read the script arguments and use them as messages
     messages = sys.argv
+    print "\n".join(messages)
     
     ## set the messages and force the display to show it directly
     display.write_message(messages)
