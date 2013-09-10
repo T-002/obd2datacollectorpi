@@ -72,7 +72,7 @@ class Display(threading.Thread):
     def shutdown(self):
         """Stops the Display and waits until it is shut down."""
         self._displayMessages = False
-        self.wait()
+        self.join()
     
     def write_message(self, messages):
         """Writes the given messages onto the display.

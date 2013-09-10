@@ -26,8 +26,8 @@
 import sys, os
 sys.path.append("%s/lib" % os.path.dirname(os.path.realpath(__file__)))
 
-import time
-from display import Display
+from time          import time as _getCurrentTime
+from display       import Display
 from datacollector import DataCollector
 
 def main(dataPath, datacollector, display):
@@ -50,7 +50,7 @@ def main(dataPath, datacollector, display):
         
         display.write_message(message)
 
-        datafile = "%s/%s.log_v2" % (dataPath, time.time())
+        datafile = "%s/%s.log_v2" % (dataPath, _getCurrentTime())
 
         loggedBytes += datacollector.write_data_log(
             datafile,
@@ -74,4 +74,3 @@ if __name__=="__main__":
         ## close all threads (hopefully)
         datacollector.shutdown()
         display.shutdown()
-        time.sleep(1)

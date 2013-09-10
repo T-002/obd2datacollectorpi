@@ -55,7 +55,7 @@ class GPSReader(threading.Thread):
     def shutdown(self):
         """Shuts down the GPSReader."""
         self._collectGPSLogs = False
-        self.wait()
+        self.join()
     
     def _read_new_gps_entry(self):
         """Reads a new GPS entry from gpsd."""
@@ -103,4 +103,5 @@ if __name__=="__main__":
         print "%s\n" % "\n".join(gpsr.get_current_gps_entries())
         time.sleep(0.5)
 
+    ## shut down the GPSReader
     gpsr.shutdown()
