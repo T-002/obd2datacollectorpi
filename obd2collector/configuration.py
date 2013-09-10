@@ -39,7 +39,7 @@ CONFIGURATION = {
 
     ## display settings
     "refreshRate":  2,
-    "heigth":       4,
+    "height":       4,
     "width":       20,
     "pins_db":    [23, 17, 27, 22], ## can be [23, 17, 21, 22] on older Raspberry Pi models
     "pin_rs":      25,
