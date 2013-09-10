@@ -90,7 +90,7 @@ class Display(threading.Thread):
         self._lcd.clear()
         self._lcd.message(datetime.now().strftime("%b %d  %H:%M:%S\n"))
         for line in self._messages:
-            self._lcd.message(line[self._width])
+            self._lcd.message(line[:self._width])
         self._lock.release()
 
 ## makes the display script callable directly
