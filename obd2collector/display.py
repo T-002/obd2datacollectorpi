@@ -45,7 +45,7 @@ class Display(threading.Thread):
         
         self._lcd = Adafruit_CharLCD(pin_rs=CONFIGURATION["pin_rs"],
                                      pin_e=CONFIGURATION["pin_e"],
-                                     pins_db=CONFIGURATION["pin_db"]
+                                     pins_db=CONFIGURATION["pins_db"]
         )
         
         ## read the Display configuration
