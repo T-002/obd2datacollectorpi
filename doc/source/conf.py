@@ -13,7 +13,7 @@
 import sys, os
 
 sys.path = ["%s/../.." % os.path.dirname(os.path.realpath(__file__))] + sys.path
-print "\n\n\n%s\n\n\n" % sys.path[:3]
+#print "\n\n\n%s\n\n\n" % sys.path[:3]
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
