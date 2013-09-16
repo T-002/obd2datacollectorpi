@@ -97,6 +97,9 @@ class Adafruit_CharLCD(object):
 
         self.currline = 0
 
+        ## added for display optimization
+        self.columns = cols
+
     def home(self):
         self.write4bits(self.LCD_RETURNHOME) # set cursor position to zero
         self.delayMicroseconds(3000)         # this command takes a long time!
