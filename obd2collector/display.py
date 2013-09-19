@@ -56,7 +56,7 @@ class Display(threading.Thread):
         self._height      = CONFIGURATION["height"]
         self._refreshRate = CONFIGURATION["refreshRate"]
         
-        self._lcd.begin(self._width, self._height)
+        self._lcd.begin(self._width, self._height-1)
         
         self._messages    = []
         
@@ -85,7 +85,10 @@ class Display(threading.Thread):
         :param List messages:   A List of messages that will be displayed.
         """
         self._lock.acquire()
-        self._messages = messages
+        ## set the messages to the number of lines the physical display has
+        self._messages = messages[:self._height-1]
+        for idx in xrange(len(self._messages) - 1):
+            self._messages[idx] = "%s" % self._messages[idx][:self._width]
         self._lock.release()
     
     def _show_message(self):
@@ -93,8 +96,10 @@ class Display(threading.Thread):
         
         self._lock.acquire()
         self._lcd.clear()
-        message = self._lcd._get_screen_message([datetime.now().strftime("%b %d  %H:%M:%S UTC")] + self._messages)
-        self._lcd.message(message)
+        curtime = ("%s UTC" % datetime.now().strftime("%b %d  %H:%M:%S UTC"))[:self._width]
+        self._lcd.message(("%s\n" % curtime))
+        for message in self._messages:
+            self._lcd.message("%s\n" % message)
         self._lock.release()
 
 ## makes the display script callable directly

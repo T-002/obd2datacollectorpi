@@ -44,22 +44,6 @@ class LCD(Adafruit_CharLCD):
         """
         raise NotImplementedError
 
-    def _get_screen_message_list(self, messages):
-        """Returns a list of display length fixed strings.
-
-        :param List messages:    Messages to be modified.
-
-        :return:    Returns a list, containing messages of the configured length.
-        :rtype:     List
-        """
-        messages = messages[:self.numlines]
-        messages = [message[:self.columns] for message in messages]
-
-        messages = [message + " " * (self.columns - len(message)) for message in messages]
-
-        return messages
-
-
 class TwoLineLCD(LCD):
     """The TwoLineLCD can be used for two line HD44780 displays."""
     
@@ -72,21 +56,9 @@ class TwoLineLCD(LCD):
         :return:    Returns a string that can be written onto the display.
         :rtype:     String
         """
-        return "".join(self._get_screen_message_list(messages))
+        lines = self.rows
+        chars = self.cols
         
 
 class FourLineLCD(LCD):
     """The FourLineLCD can be used for four line HD44780 displays."""
-
-    def _get_screen_message(self, messages):
-        """Returns a string, containing a writeable message for the display.
-        
-        :param List messages:    List of string containing the messages in their
-                                 correct order.
-        
-        :return:    Returns a string that can be written onto the display.
-        :rtype:     String
-        """
-        messages = self._get_screen_message_list(messages)
-        messages = [messages[0], messages[2], messages[1], messages[3]]
-        return "".join(messages)
