@@ -29,7 +29,7 @@ from configuration import CONFIGURATION
 class GPSReader(threading.Thread):
     """Class reading GPS reports created by gpsd."""
 
-    def __init__(self, gpsdPort):
+    def __init__(self):
         """Initializes the GPSReader."""
         super(GPSReader, self).__init__()
         
