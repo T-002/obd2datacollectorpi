@@ -36,6 +36,7 @@ CONFIGURATION = {
 
     ## GPS daemon settings
     "gpsdPort":  2947,
+    "gpsdHost":  "localhost",
 
     ## display settings
     "refreshRate":  2,
