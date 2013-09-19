@@ -1,3 +1,3 @@
 .. index
 
-easy_install python-gps
+sudo apt-get install gpsd gpsd-clients python-gps
