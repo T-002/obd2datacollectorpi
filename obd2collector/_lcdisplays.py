@@ -58,6 +58,7 @@ class LCD(Adafruit_CharLCD):
         messages = [message + " " * (self.columns - len(message)) for message in messages]
         
         while len(messages) < self.numlines:
+            print "Adding a line"
             messages.append(" " * self.columns)
 
         return messages
