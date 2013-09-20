@@ -100,7 +100,7 @@ if __name__=="__main__":
     ## run for 30 seconds
     endTime = time.time() + 30
     while time.time() < endTime:
-        print "%s\n" % "\n".join(gpsr.get_current_gps_entries())
+        print "%s\n" % "\n".join([str(e) for e in gpsr.get_current_gps_entries()])
         time.sleep(0.5)
 
     ## shut down the GPSReader
