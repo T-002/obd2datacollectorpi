@@ -3,10 +3,25 @@
 Connecting a Real Time Clock to your Raspberry
 ==============================================
 
+The Raspberry Pi does not have a clock that is running, even if the Raspberry Pi itself is switched off.
+The installed software solution of using ntp for initial setup and persiting the time periocally works good for the majority of the Raspberry Pi use cases, having the Raspberry conntected to the internet.
 
-http://afterthoughtsoftware.com/products/rasclock
+The OBD2 data collector will be installed inside a vehicle, having no internet connection to synchronize the time.
+Therefore the Raspberry Pi will be equipped with a hardware clock module.
+
+The install instructions are mainly for the `RasClock <http://afterthoughtsoftware.com/products/rasclock>`_.
+
+
+Installing the Clock
+--------------------
+To install the clock, please wire the 3.3V, GND, SDA and SCL pin to the Raspberry Pi.
+
+
+Installing the RTC Kernel
+-------------------------
 
 change into root shell
+
 
 install the kernel
     wget http://afterthoughtsoftware.com/files/linux-image-3.6.11-atsw-rtc_1.0_armhf.deb
@@ -37,3 +52,10 @@ persist ntp datetime to hwclock automatically
     echo '#!/bin/bash'  > /etc/cron.daily/hwclock-sync 
     echo 'hwclock -w' >> /etc/cron.daily/hwclock-sync
     chmod a+x /etc/cron.daily/hwclock-sync
+
+
+
+Additional Information
+----------------------
+For more information, please take a look into the `original instructions <http://afterthoughtsoftware.com/products/rasclock>`_.
+* :ref:`search`
