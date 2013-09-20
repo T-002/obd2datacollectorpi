@@ -16,6 +16,14 @@ Cloning repository
 
 
 
+Installing Bluetooth (installs a lot of dependencies)
+    apt-get install bluetooth
+
+    update-rc.d bluetooth defaults
+    hciconfig -a
+
+    http://www.raspberrypi.org/phpBB3/viewtopic.php?t=9585&p=276881
+
 
 
 
