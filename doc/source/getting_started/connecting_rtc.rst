@@ -1,7 +1,7 @@
 .. index
 
-Connecting a Real Time Clock to your Raspberry
-==============================================
+Connecting a Real Time Clock
+============================
 
 The Raspberry Pi does not have a clock that is running, even if the Raspberry Pi itself is switched off.
 The installed software solution of using ntp for initial setup and persiting the time periocally works good for the majority of the Raspberry Pi use cases, having the Raspberry conntected to the internet.
@@ -12,50 +12,56 @@ Therefore the Raspberry Pi will be equipped with a hardware clock module.
 The install instructions are mainly for the `RasClock <http://afterthoughtsoftware.com/products/rasclock>`_.
 
 
-Installing the Clock
---------------------
+Hardware Installation
+---------------------
 To install the clock, please wire the 3.3V, GND, SDA and SCL pin to the Raspberry Pi.
 
 
-Installing the RTC Kernel
--------------------------
+Software Installation
+---------------------
 
-change into root shell
+You should change into a root shell::
 
+    sudo -i
 
-install the kernel
+Install a linux kernel with real time clock support (`RasClock <http://afterthoughtsoftware.com/products/rasclock>`_ in our case)::
+
     wget http://afterthoughtsoftware.com/files/linux-image-3.6.11-atsw-rtc_1.0_armhf.deb
     dpkg -i linux-image-3.6.11-atsw-rtc_1.0_armhf.deb
     mv /boot/kernel.img /boot/kernel.img.old
     cp /boot/vmlinuz-3.6.11-atsw-rtc+ /boot/kernel.img
     rm linux-image-3.6.11-atsw-rtc_1.0_armhf.deb
 
-add the required modules:
+You need to add teh required modules at boot time.::
+
     echo "i2c-bcm2708"  >> /etc/modules
     echo "rtc-pcf2127a" >> /etc/modules
 
-enable RTC at boot time (edit /etc/rc.local)
+Add the following two lines to ``/etc/rc.local``, just before the ``exit 0`` at the end.::
+
     echo pcf2127a 0x51 > /sys/class/i2c-adapter/i2c-1/new_device
     ( sleep 2; hwclock -s ) &
 
-reboot the system
+Finally! :)::
+
     reboot
 
-remove fake rtc
+Optional Steps
+--------------
+After installing the RTC, you should be able to remove the ``fake-hwclock``.::
+
     apt-get remove fake-hwclock
     rm /etc/cron.hourly/fake-hwclock
     update-rc.d -f fake-hwclock remove
     rm /etc/init.d/fake-hwclock
 
+To periodically write back the system clock to the RTC, in case of periodically NTP synchronization, you can do the following.::
 
-persist ntp datetime to hwclock automatically
     echo '#!/bin/bash'  > /etc/cron.daily/hwclock-sync 
     echo 'hwclock -w' >> /etc/cron.daily/hwclock-sync
     chmod a+x /etc/cron.daily/hwclock-sync
 
 
-
-Additional Information
-----------------------
-For more information, please take a look into the `original instructions <http://afterthoughtsoftware.com/products/rasclock>`_.
-* :ref:`search`
+References
+----------
+ * `Original RasClock Instructions <http://afterthoughtsoftware.com/products/rasclock>`_
