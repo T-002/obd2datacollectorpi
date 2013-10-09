@@ -29,10 +29,12 @@ if __name__=="__main__":
 
 from datetime         import datetime
 from configuration    import CONFIGURATION
-import _lcdisplays
-import threading, time
+from util             import Thread
 
-class Display(threading.Thread):
+import _lcdisplays
+import time
+
+class Display(Thread):
     """A wrapper class for the connected LC display."""
     
     def __init__(self, autostart=True):
@@ -60,25 +62,16 @@ class Display(threading.Thread):
         
         self._messages    = []
         
-        self._lock = threading.Lock()
-        
         ## start the Thread
-        self._displayMessages = True
-        
         if autostart:
             self.start()
     
     def run(self):
         """Runs the Display thread until the Display is :py:meth:`Display.shutdown`."""
-        while self._displayMessages:
+        while self._continueRunning:
             self._show_message()
             time.sleep(self._refreshRate)
 
-    def shutdown(self):
-        """Stops the Display and waits until it is shut down."""
-        self._displayMessages = False
-        self.join()
-    
     def write_message(self, messages):
         """Writes the given messages onto the display.
 

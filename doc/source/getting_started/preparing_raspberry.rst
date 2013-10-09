@@ -9,7 +9,7 @@ Update all packages
     apt-get autoremove
 
 Install helpful tools
-    apt-get -y install screen python-setuptools locate python-sphinx python-coverage
+    apt-get -y install screen python-setuptools locate python-sphinx python-coverage python-twisted
 
 Cloning repository
     git clone https://github.com/T-002/obd2datacollectorpi.git /opt/obd2datacollectorpi

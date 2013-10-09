@@ -22,11 +22,12 @@
 #IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 #CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import gps, threading, time
+import gps, time
 
+from util          import Thread
 from configuration import CONFIGURATION
 
-class GPSReader(threading.Thread):
+class GPSReader(Thread):
     """Class reading GPS reports created by gpsd."""
 
     def __init__(self):
@@ -41,21 +42,13 @@ class GPSReader(threading.Thread):
         ## initialize the report list
         self._gpsLogEntries = []
         
-        self._lock = threading.Lock()
-        
         ## start the thread
-        self._collectGPSLogs = True
         self.start()
     
     def connect(self):
         """Connects to the GPS Daemon."""
         self._session = gps.gps(self._gpsHost, self._gpsdPort)
         self._session.stream(gps.WATCH_ENABLE | gps.WATCH_JSON)
-
-    def shutdown(self):
-        """Shuts down the GPSReader."""
-        self._collectGPSLogs = False
-        self.join()
     
     def _read_new_gps_entry(self):
         """Reads a new GPS entry from gpsd."""
@@ -81,7 +74,7 @@ class GPSReader(threading.Thread):
     def run(self):
         """Runs the GPS Reader until :py:meth:`GPSReader.shutdown` is called."""
 
-        while self._collectGPSLogs:
+        while self._continueRunning:
             self._read_new_gps_entry()
             time.sleep(0.5)
     

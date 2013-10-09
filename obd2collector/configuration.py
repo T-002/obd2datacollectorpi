@@ -25,6 +25,9 @@
 from os import getenv as _getenv
 
 CONFIGURATION = {
+    ## ending for all log files
+    "logending":  "log_v2"
+
     ## ODB2 connector settings
     "device":     _getenv("CANADAPTER"),
     
@@ -46,4 +49,8 @@ CONFIGURATION = {
     "pin_rs":      25,
     "pin_e":       24,
     "displaytype": "FourLineLCD"
+
+    ## enable log server
+    "logServer":     True
+    "logServerPort": 55555
 }
