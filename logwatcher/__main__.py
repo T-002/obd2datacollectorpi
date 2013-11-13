@@ -22,35 +22,29 @@
 #IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 #CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-from os import getenv as _getenv
+from logwatcher import LogWatcher
 
-CONFIGURATION = {
-    ## ending for all log files
-    "logending":  "log_v2"
+def main():
+    """Starts the LogWatcher process.
 
-    ## ODB2 connector settings
-    "device":     _getenv("CANADAPTER"),
+    :param String        dataPath:         Directory where the data will be stored.
+    """
+    lw = LogWatcher(dataPath)
     
-    #### USB connected data reader
-    "obd2reader": "SerialDataReader",
-    "speed":      "S6",
 
-    #### Blutooth connected data reader
 
-    ## GPS daemon settings
-    "gpsdPort":  2947,
-    "gpsdHost":  "localhost",
 
-    ## display settings
-    "refreshRate":  2,
-    "height":       4,
-    "width":       20,
-    "pins_db":    [23, 17, 27, 22], ## can be [23, 17, 21, 22] on older Raspberry Pi models
-    "pin_rs":      25,
-    "pin_e":       24,
-    "displaytype": "FourLineLCD"
+if __name__=="__main__":
 
-    ## enable log server
-    "logServer":     True
-    "logServerPort": 55555
-}
+    ## make sure the script is called correctly
+    if 2 != len(sys.argv):
+        raise OSError("[ERROR] Correct usage:\n  python logwatcher <data directory>")
+
+    dataPath      = sys.argv[1]
+
+    try:
+        main(dataPath)
+    except KeyboardInterrupt:
+        ## close all threads (hopefully)
+        datacollector.shutdown()
+        display.shutdown()

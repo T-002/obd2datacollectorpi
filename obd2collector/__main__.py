@@ -29,6 +29,7 @@ sys.path.append("%s/lib" % os.path.dirname(os.path.realpath(__file__)))
 from time          import time as _getCurrentTime
 from display       import Display
 from datacollector import DataCollector
+from configuration import CONFIGURATION
 
 def main(dataPath, datacollector, display):
     """Main function of the odb2collector.
@@ -40,6 +41,8 @@ def main(dataPath, datacollector, display):
     ## Numer of bytes stored
     loggedBytes = 0
 
+    logEnding = CONFIGURATION["logending"]
+
     while True:
 
         message = [
@@ -50,7 +53,7 @@ def main(dataPath, datacollector, display):
         
         display.write_message(message)
 
-        datafile = "%s/%s.log_v2" % (dataPath, _getCurrentTime())
+        datafile = "%s/%s.%s" % (dataPath, _getCurrentTime(), logEnding)
 
         loggedBytes += datacollector.write_data_log(
             datafile,

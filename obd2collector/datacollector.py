@@ -24,6 +24,8 @@
 
 import obd2reader
 from gpsreader import GPSReader
+from logserver import LogServer
+
 from configuration import CONFIGURATION
 
 from time import time as _getCurrentTime
@@ -46,6 +48,10 @@ class DataCollector(object):
         self._obd2reader.open_connection()
 
         self._gpsreader  = GPSReader(CONFIGURATION["gpsdPort"])
+
+        self._logServer  = None
+        if CONFIGURATION["logServer"]:
+            self._logServer = LogServer()
 
     def shutdown(self):
         """Shuts down the DataCollector and all of its Threads."""
@@ -72,6 +78,7 @@ class DataCollector(object):
         write      = logf.write
         gpsreader  = self._gpsreader
         obd2reader = self._obd2reader
+        logServer  = self._logServer
 
         ## number of bytes written
         bytes = 0
@@ -82,6 +89,11 @@ class DataCollector(object):
             ## time stamp
             timestamp = "#TIME__%s\n" % _getCurrentTime()
             write(timestamp)
+
+            ## send the timestamp to the logServer if requested            
+            if logServer:
+                logServer.add_entries([timestamp])
+
             bytes += len(timestamp)
 
             ## read the number of frames requested
@@ -90,6 +102,10 @@ class DataCollector(object):
             except:
                 obd2reader.reconnect()
                 continue
+
+            ## send the log to the logServer if requested
+            if logServer:
+                logServer.add_entries(logEntries)
             
             ## store the frames in the log
             logEntries = "\n".join(logEntries)
@@ -98,6 +114,10 @@ class DataCollector(object):
 
             ## append the gpslog entries, when there are any
             gpsreports = ["#GPS__%s\n" % entry for entry in gpsreader.get_current_gps_entries()]
+
+            ## send the gps log to the logServer if requested
+            if logServer:
+                logServer.add_entries(gpsreports)
             
             ## no GPS report collected since last run
             if not gpsreports:

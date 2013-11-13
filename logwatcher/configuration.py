@@ -27,30 +27,4 @@ from os import getenv as _getenv
 CONFIGURATION = {
     ## ending for all log files
     "logending":  "log_v2"
-
-    ## ODB2 connector settings
-    "device":     _getenv("CANADAPTER"),
-    
-    #### USB connected data reader
-    "obd2reader": "SerialDataReader",
-    "speed":      "S6",
-
-    #### Blutooth connected data reader
-
-    ## GPS daemon settings
-    "gpsdPort":  2947,
-    "gpsdHost":  "localhost",
-
-    ## display settings
-    "refreshRate":  2,
-    "height":       4,
-    "width":       20,
-    "pins_db":    [23, 17, 27, 22], ## can be [23, 17, 21, 22] on older Raspberry Pi models
-    "pin_rs":      25,
-    "pin_e":       24,
-    "displaytype": "FourLineLCD"
-
-    ## enable log server
-    "logServer":     True
-    "logServerPort": 55555
 }
