@@ -9,10 +9,11 @@ Update all packages
     apt-get autoremove
 
 Install helpful tools
-    apt-get -y install screen python-setuptools locate python-sphinx python-coverage python-twisted
+    apt-get -y install screen python-setuptools locate python-sphinx python-coverage python-twisted python-smbus i2c-tools python-webpy
 
-Cloning repository
+Cloning repositories
     git clone https://github.com/T-002/obd2datacollectorpi.git /opt/obd2datacollectorpi
+    git clone https://github.com/bugblat/pif.git /opt/pif
 
 
 

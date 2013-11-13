@@ -10,3 +10,4 @@ Getting Started
    connecting_rtc
    connecting_gps
    connecting_display
+   connecting_pif7000
