@@ -28,33 +28,23 @@ sys.path.append("%s/lib" % os.path.dirname(os.path.realpath(__file__)))
 
 from time          import time as _getCurrentTime
 from datacollector import DataCollector
-<<<<<<< HEAD
-=======
 from compressor    import Compressor
 from util          import Thread
->>>>>>> 5cf4fd98d966f02bc957d028eee3c0790898ae12
 from configuration import CONFIGURATION
 
-def main(dataPath, datacollector, display):
+def main(dataPath, datacollector):
     """Main function of the odb2collector.
 
     :param String        dataPath:         Directory where the data will be stored.
     :param DataCollector datacollector:    DataCollector instance used.
-    :param Display       display:          Display instance used to show messages.
     """
     ## Numer of bytes stored
     loggedBytes = 0
 
-<<<<<<< HEAD
-    logEnding = CONFIGURATION["logending"]
-
-    while True:
-=======
     ## Initiate the compressor
     gzip = Compressor()
 
     logEnding = CONFIGURATION["logEnding"]
->>>>>>> 5cf4fd98d966f02bc957d028eee3c0790898ae12
 
     while True:
         message = [
@@ -66,11 +56,6 @@ def main(dataPath, datacollector, display):
         display.write_message(message)
 
         datafile = "%s/%s.%s" % (dataPath, _getCurrentTime(), logEnding)
-<<<<<<< HEAD
-
-=======
-        
->>>>>>> 5cf4fd98d966f02bc957d028eee3c0790898ae12
         loggedBytes += datacollector.write_data_log(
             datafile,
             nbrOfOBDFrames=50000,
@@ -89,7 +74,7 @@ if __name__=="__main__":
     datacollector = DataCollector()
 
     try:
-        main(dataPath, datacollector, display)
+        main(dataPath, datacollector)
     except KeyboardInterrupt:
         ## close all threads (hopefully)
         Thread.shutdown()

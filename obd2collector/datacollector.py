@@ -49,18 +49,10 @@ class DataCollector(object):
 
         self._gpsreader  = GPSReader(CONFIGURATION["gpsdPort"])
 
-<<<<<<< HEAD
         self._logServer  = None
         if CONFIGURATION["logServer"]:
             self._logServer = LogServer()
 
-    def shutdown(self):
-        """Shuts down the DataCollector and all of its Threads."""
-        self._obd2reader.shutdown()
-        self._gpsreader.shutdown()
-
-=======
->>>>>>> 5cf4fd98d966f02bc957d028eee3c0790898ae12
     def write_data_log(self, logFileName, nbrOfOBDFrames, messagesPerTimestamp):
         """Stores an data log file to the given location.
 
