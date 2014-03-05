@@ -3,7 +3,7 @@
 
 #The MIT License (MIT)
 #
-#Copyright (c) 2013 Christian Schwarz
+#Copyright (c) 2013-2014 Christian Schwarz
 #
 #Permission is hereby granted, free of charge, to any person obtaining a copy of
 #this software and associated documentation files (the "Software"), to deal in
@@ -21,7 +21,6 @@
 #COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
 #IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 #CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
 class OBD2Reader(object):
     """Base class for all OBD2Reader.
 
@@ -29,16 +28,18 @@ class OBD2Reader(object):
     derived classes.
     """
 
-    def __init__(self, device, speed):
+    def __init__(self, device, speed, display=None):
         """Initializes the OBD2Reader.
 
         :param String  device:    OS path to the device used to collect the data.
         :param Integer speed:     Speed used to connect to the given device.
+        :param Display display:   Display instance that can be used to view messages.
         """
         super(OBD2Reader, self).__init__()
 
-        self._device = device
-        self._speed  = speed
+        self._device  = device
+        self._speed   = speed
+        self._display = display
 
         self._wconnection   = None
         self._rconnection   = None
@@ -168,3 +169,180 @@ class SerialDataReader(OBD2Reader):
 
         return frame
 
+import bluetooth, time, sys
+class BluetoothDataReader(OBD2Reader):
+    
+    def open_connection(self):
+                ## close already open connection
+        if self._connected:
+            self._rconnection.close()
+            self._wconnection.close()
+            self._rconnection = None
+            self._wconnection = None
+
+        self._connection = self._get_connection()
+        self.reconnect()
+
+    def _get_connection(self):
+        """Opens the RFCOMM connection.
+
+        :return:    Returns the connection.
+        :rtype:     bluetooth.BluetoothSocket.
+        """
+        socket = None
+        print "Getting Connection..."
+
+        retry = 0
+
+        while not socket:
+            try:
+                print "Opening Socket"
+                socket = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
+                socket.connect((self._device, 1))
+            except bluetooth.btcommon.BluetoothError, e:
+                socket = None
+                time.sleep(1)
+                
+                message = e.message[1:-1].split(",")
+                errorCode = int(message[0])
+                
+                ## something happened with the socket. A new socket should help
+                if errorCode == 77:
+                    continue
+
+                ## Adapter cannot be found
+                if errorCode == 112 or retry > 10:
+                    self._display.write_message(["!Reconnect BTAdapter", "EC %s" % errorCode])
+                    print "!Reconnect BTAdapter"
+                    time.sleep(5)
+                    continue
+
+                ## Adapter is in error state
+                if errorCode in [113, 115, 52]:
+                    self._display.write_message(["!Reset BTAdapter", "EC %s" % errorCode])
+                    print "!Reset BTAdapter %s" % errorCode
+                    time.sleep(5)
+                    retry = 0
+                    continue
+
+                ## Device is busy, we should wait a little longer
+                if errorCode == 16:
+                    self._display.write_message(["Waiting for BTAdapter", "EC %s" % errorCode])
+                    print "Waiting for BTAdapter"
+                    retry += 1
+                    continue
+
+
+                self._display.write_message(["Unknown Error", "EC %s" % errorCode])
+                print "Unknown Error"
+                print e
+                sys.exit()
+    
+        self._display.write_message(["BT Connection OK"])
+        print "BT Connection OK"
+        return socket
+    
+    def reconnect(self):
+        self.send_command("Z")
+        self.read_frame()
+        self.read_frame()
+        self.read_frame()
+        
+        self.send_command("AL")
+        self.read_frame()
+        self.read_frame()
+        self.read_frame()
+        
+        #self.send_command("L1")
+        #self.read_frame()
+        #self.read_frame()
+        #self.read_frame()
+        
+        self.send_command("H1")
+        self.read_frame()
+        self.read_frame()
+        self.read_frame()
+        
+        self.send_command("S1")
+        self.read_frame()
+        self.read_frame()
+        self.read_frame()
+
+        self.send_command("CAF0")
+        self.read_frame()
+        self.read_frame()
+        self.read_frame()
+
+        self.send_command("D1")
+        self.read_frame()
+        self.read_frame()
+        self.read_frame()
+        
+        self.send_command("MA")
+        self.read_frame()
+        self.read_frame()
+        self.read_frame()
+            
+    def send_command(self, command, prefixAT=True):
+        """Sends the given command to the adapter.
+
+        :param String command:    Command that will be send.
+        :param Bool   prefixAT:   Automatically adds the 'AT' to the command.
+
+        :return:    Returns if the command was send sucessfully or not.
+        :rtype:     Boolean
+        """
+        if prefixAT:
+            command = "AT%s" % command
+        
+        res = self._connection.send("%s\r" % command)
+        return res == (len(command)) + 1
+    
+    def read_frame(self):
+        result = ""
+        data = self._connection.recv(1)
+        while data != "\r":
+            result += data
+            data = self._connection.recv(1)
+
+        if "BUFFER FULL" in result:
+            #print "\n"
+            self.send_command("BD")
+            self.send_command("MA")
+            return self.read_frame()
+        
+        return result
+    
+def main():
+    from display import Display
+
+    display = Display()
+    
+    #reader = BluetoothDataReader("00:04:3E:26:08:CB", 1, display)
+    reader = BluetoothDataReader("/dev/rfcomm99", 1, display)
+
+    reader.open_connection()
+    
+    while True:
+        res = reader.read_frame()
+        
+        if res == "\n":
+            continue
+        
+        print res
+        continue
+    
+        cmd = raw_input("Command: ")
+        
+        if cmd != "read":
+            if not reader.send_command(cmd):
+                print "Could not send command %s" % cmd
+                continue
+        
+        print reader.read_frame()
+
+if __name__=="__main__":
+    try:
+        main()
+    except:
+        sys.exit(0)

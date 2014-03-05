@@ -3,7 +3,7 @@
 
 #The MIT License (MIT)
 #
-#Copyright (c) 2013 Christian Schwarz
+#Copyright (c) 2013-2014 Christian Schwarz
 #
 #Permission is hereby granted, free of charge, to any person obtaining a copy of
 #this software and associated documentation files (the "Software"), to deal in
@@ -24,8 +24,6 @@
 
 import obd2reader
 from gpsreader import GPSReader
-from logserver import LogServer
-
 from configuration import CONFIGURATION
 
 from time import time as _getCurrentTime
@@ -39,19 +37,18 @@ class DataCollector(object):
         - OBD2 data
     """
 
-    def __init__(self):
-        """Initializes the DataCollector."""
+    def __init__(self, display):
+        """Initializes the DataCollector.
+
+        :param Display display: Display that can be used to view messages.
+        """
         super(DataCollector, self).__init__()
         
         obd2readerClass  = getattr(obd2reader, CONFIGURATION["obd2reader"])
-        self._obd2reader = obd2readerClass(CONFIGURATION["device"], CONFIGURATION["speed"])
+        self._obd2reader = obd2readerClass(CONFIGURATION["device"], CONFIGURATION["speed"], display)
         self._obd2reader.open_connection()
 
-        self._gpsreader  = GPSReader(CONFIGURATION["gpsdPort"])
-
-        self._logServer  = None
-        if CONFIGURATION["logServer"]:
-            self._logServer = LogServer()
+        self._gpsreader  = GPSReader()
 
     def write_data_log(self, logFileName, nbrOfOBDFrames, messagesPerTimestamp):
         """Stores an data log file to the given location.
@@ -73,7 +70,6 @@ class DataCollector(object):
         write      = logf.write
         gpsreader  = self._gpsreader
         obd2reader = self._obd2reader
-        logServer  = self._logServer
 
         ## number of bytes written
         bytes = 0
@@ -84,11 +80,6 @@ class DataCollector(object):
             ## time stamp
             timestamp = "#TIME__%s\n" % _getCurrentTime()
             write(timestamp)
-
-            ## send the timestamp to the logServer if requested            
-            if logServer:
-                logServer.add_entries([timestamp])
-
             bytes += len(timestamp)
 
             ## read the number of frames requested
@@ -97,10 +88,6 @@ class DataCollector(object):
             except:
                 obd2reader.reconnect()
                 continue
-
-            ## send the log to the logServer if requested
-            if logServer:
-                logServer.add_entries(logEntries)
             
             ## store the frames in the log
             logEntries = "\n".join(logEntries)
@@ -109,10 +96,6 @@ class DataCollector(object):
 
             ## append the gpslog entries, when there are any
             gpsreports = ["#GPS__%s\n" % entry for entry in gpsreader.get_current_gps_entries()]
-
-            ## send the gps log to the logServer if requested
-            if logServer:
-                logServer.add_entries(gpsreports)
             
             ## no GPS report collected since last run
             if not gpsreports:

@@ -3,7 +3,7 @@
 
 #The MIT License (MIT)
 #
-#Copyright (c) 2013 Christian Schwarz
+#Copyright (c) 2013-2014 Christian Schwarz
 #
 #Permission is hereby granted, free of charge, to any person obtaining a copy of
 #this software and associated documentation files (the "Software"), to deal in
@@ -58,7 +58,6 @@ class LCD(Adafruit_CharLCD):
         messages = [message + " " * (self.columns - len(message)) for message in messages]
         
         while len(messages) < self.numlines:
-            print "Adding a line"
             messages.append(" " * self.columns)
 
         return messages

@@ -32,7 +32,7 @@ Install a linux kernel with real time clock support (`RasClock <http://afterthou
     cp /boot/vmlinuz-3.6.11-atsw-rtc+ /boot/kernel.img
     rm linux-image-3.6.11-atsw-rtc_1.0_armhf.deb
 
-You need to add teh required modules at boot time.::
+You need to add the required modules at boot time.::
 
     echo "i2c-bcm2708"  >> /etc/modules
     echo "rtc-pcf2127a" >> /etc/modules
@@ -50,7 +50,7 @@ Optional Steps
 --------------
 After installing the RTC, you should be able to remove the ``fake-hwclock``.::
 
-    apt-get remove fake-hwclock
+    apt-get -y remove fake-hwclock
     rm /etc/cron.hourly/fake-hwclock
     update-rc.d -f fake-hwclock remove
     rm /etc/init.d/fake-hwclock

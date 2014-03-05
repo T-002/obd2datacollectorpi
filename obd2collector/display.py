@@ -3,7 +3,7 @@
 
 #The MIT License (MIT)
 #
-#Copyright (c) 2013 Christian Schwarz
+#Copyright (c) 2013-2014 Christian Schwarz
 #
 #Permission is hereby granted, free of charge, to any person obtaining a copy of
 #this software and associated documentation files (the "Software"), to deal in
@@ -23,9 +23,8 @@
 #CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ## add the lib dir into the python path, if the script is called directly
-if __name__=="__main__":
-    import os, sys
-    sys.path.append("%s/lib" % os.path.dirname(os.path.realpath(__file__)))
+import os, sys
+sys.path.append("%s/lib" % os.path.dirname(os.path.realpath(__file__)))
 
 from datetime         import datetime
 from configuration    import CONFIGURATION

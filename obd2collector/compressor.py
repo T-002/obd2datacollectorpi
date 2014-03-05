@@ -3,7 +3,7 @@
 
 #The MIT License (MIT)
 #
-#Copyright (c) 2013 Christian Schwarz
+#Copyright (c) 2013-2014 Christian Schwarz
 #
 #Permission is hereby granted, free of charge, to any person obtaining a copy of
 #this software and associated documentation files (the "Software"), to deal in
@@ -23,23 +23,19 @@
 #CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 from util import Thread
-import time, os, subprocess
+import time, subprocess
 
 class Compressor(Thread):
     """The Compressor is used to compress the given log file."""
 
-    def __init__(self, filename):
-        """Initialized the Compressor.
-
-        :param String filename:    File name to be compressed.
-        """
+    def __init__(self):
+        """Initialized the Compressor."""
         super(Compressor, self).__init__()
 
         self._filesToCompress = []
 
     def run(self):
         """Runs the Compressor."""
-
         while self._continueRunning:
             ## run only every 5 seconds.
             time.sleep(5)
@@ -50,7 +46,7 @@ class Compressor(Thread):
 
             self._lock.acquire()
             filepath = self._filesToCompress[0]
-            self._filesToCompress.remove(0)
+            self._filesToCompress.remove(filepath)
             self._lock.release()
 
             self._compress_file(filepath)
@@ -60,7 +56,7 @@ class Compressor(Thread):
         
         for f in self._filesToCompress:
             filepath = self._filesToCompress[0]
-            self._filesToCompress.remove(0)
+            self._filesToCompress.remove(filepath)
             self._compress_file(filepath)
 
         self._lock.release()

@@ -6,7 +6,7 @@ Connecting GPS
 http://learn.adafruit.com/adafruit-ultimate-gps-on-the-raspberry-pi/setting-everything-up
 
 
-sudo apt-get install gpsd gpsd-clients python-gps
+sudo apt-get -y install gpsd gpsd-clients python-gps
 
 
 sudo update-rc.d gpsd defaults

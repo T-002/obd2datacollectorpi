@@ -3,7 +3,7 @@
 
 #The MIT License (MIT)
 #
-#Copyright (c) 2013 Christian Schwarz
+#Copyright (c) 2013-2014 Christian Schwarz
 #
 #Permission is hereby granted, free of charge, to any person obtaining a copy of
 #this software and associated documentation files (the "Software"), to deal in
@@ -26,14 +26,14 @@ from os import getenv as _getenv
 
 CONFIGURATION = {
     ## ending for all log files
-    "logending":  "log_v2"
+    "logending":  "log_v2",
 
     ## ODB2 connector settings
     "device":     _getenv("CANADAPTER"),
     
     #### USB connected data reader
-    "obd2reader": "SerialDataReader",
-    "speed":      "S6",
+    "obd2reader": "BluetoothDataReader",
+    "speed":      "1",
 
     #### Blutooth connected data reader
 
@@ -48,9 +48,9 @@ CONFIGURATION = {
     "pins_db":    [23, 17, 27, 22], ## can be [23, 17, 21, 22] on older Raspberry Pi models
     "pin_rs":      25,
     "pin_e":       24,
-    "displaytype": "FourLineLCD"
+    "displaytype": "FourLineLCD",
 
     ## enable log server
-    "logServer":     True
+    "logServer":     True,
     "logServerPort": 55555
 }

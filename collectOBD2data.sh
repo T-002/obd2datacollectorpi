@@ -26,22 +26,22 @@
 cd $WORKDIR
 
 ## create log
-echo "#########################"                                     >  $LOG
-echo "# i-MiEV data collector #"                                     >> $LOG
-echo "#########################"                                     >> $LOG
+echo "#######################"                                     >  $LOG
+echo "# OBD2 data collector #"                                     >> $LOG
+echo "#######################"                                     >> $LOG
 
 ## change into working directory
 echo "[`date`] Changed already into working directory. ("$WORKDIR")" >> $LOG
 
-# check for usb mount
-echo "[`date`] Checking for USB stick availablility"                 >> $LOG
-while [ ! -e $USBSTICK ]
-do
-    echo "[`date`]  [ERROR] USB Stick not found... ($USBSTICK)"
-    echo "[`date`]  [ERROR] USB Stick not found... ($USBSTICK)"      >> $LOG
-    python obd2collector/display.py "E: USB missing."
-    sleep 3
-done
+## check for usb mount
+#echo "[`date`] Checking for USB stick availablility"                 >> $LOG
+#while [ ! -e $USBSTICK ]
+#do
+#    echo "[`date`]  [ERROR] USB Stick not found... ($USBSTICK)"
+#    echo "[`date`]  [ERROR] USB Stick not found... ($USBSTICK)"      >> $LOG
+#    python obd2collector/display.py "E: USB missing."
+#    sleep 3
+#done
 
 if [ ! -d data ] ; then
     echo "[`date`]  [WARNING] data directory not found."             >> $LOG
@@ -54,15 +54,19 @@ if [ $STICKMOUNTED -ne 1 ] ; then
     mount $USBSTICK $WORKDIR/data                                    >> $LOG 2>> $LOG
 fi
 
-# check for adapter
-echo "[`date`] Looking for CAN adapter"                              >> $LOG
-while [ ! -e $CANADAPTER ]
-do
-    echo "[`date`]  [ERROR] CAN adapter not found... ($CANADAPTER)"
-    echo "[`date`]  [ERROR] CAN adapter not found... ($CANADAPTER)"  >> $LOG
-    python obd2collector/display.py "E: CAN missing."
-    sleep 3
-done
+# restarting bluetooth
+echo "[`date`] Restarting Bluetooth"                                 >> $LOG 2>> $LOG
+/etc/init.d/bluetooth restart
+
+## check for adapter
+#echo "[`date`] Looking for CAN adapter"                              >> $LOG
+#while [ ! -e $CANADAPTER ]
+#do
+#    echo "[`date`]  [ERROR] CAN adapter not found... ($CANADAPTER)"
+#    echo "[`date`]  [ERROR] CAN adapter not found... ($CANADAPTER)"  >> $LOG
+#    python obd2collector/display.py "E: CAN missing."
+#    sleep 3
+#done
 
 # create directory
 echo "[`date`] Creating data directory"                              >> $LOG 2>> $LOG
@@ -71,7 +75,7 @@ mkdir -p $DATADIR
 # call collector
 echo "[`date`] Starting data collection"                             >> $LOG
 python obd2collector/display.py "Running..."
-python obd2collector $DATADIR                                        >> $LOG 2>> $LOG
+python -u obd2collector $DATADIR                                     >> $LOG 2>> $LOG
    
 ## change back into starting directory
 echo "[`date`] Done."                                                >> $LOG
