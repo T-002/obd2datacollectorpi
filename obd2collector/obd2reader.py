@@ -309,6 +309,9 @@ class BluetoothDataReader(OBD2Reader):
             #print "\n"
             self.send_command("BD")
             self.send_command("MA")
+            self.send_command("STCSWM2", False)
+            time.sleep(0.1)
+            self.send_command("STCSWM3",  False)
             return self.read_frame()
         
         return result
