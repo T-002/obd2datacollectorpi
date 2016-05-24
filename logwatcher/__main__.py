@@ -22,29 +22,21 @@
 #IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 #CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+import sys
+
 from logwatcher import LogWatcher
 
-def main():
+def main(dataPath):
     """Starts the LogWatcher process.
 
     :param String        dataPath:         Directory where the data will be stored.
     """
     lw = LogWatcher(dataPath)
-    
-
-
 
 if __name__=="__main__":
-
     ## make sure the script is called correctly
     if 2 != len(sys.argv):
         raise OSError("[ERROR] Correct usage:\n  python logwatcher <data directory>")
 
-    dataPath      = sys.argv[1]
-
-    try:
-        main(dataPath)
-    except KeyboardInterrupt:
-        ## close all threads (hopefully)
-        datacollector.shutdown()
-        display.shutdown()
+    dataPath = sys.argv[1]
+    main(dataPath)

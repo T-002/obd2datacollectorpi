@@ -53,13 +53,13 @@ def main(dataPath, datacollector, display):
         message = [
             "Logged %skB" % (loggedBytes / 1024)
         ]
-        
+
         print "\n".join(message)
-        
+
         display.write_message(message)
 
         datafile = "%s/%s.%s" % (dataPath, _getCurrentTime(), logEnding)
-        
+
         loggedBytes += datacollector.write_data_log(
             datafile,
             nbrOfOBDFrames=1000,
@@ -77,13 +77,8 @@ if __name__=="__main__":
     dataPath      = sys.argv[1]
 
     print "Starting OBD2 DataCollector"
-    
+
     display       = Display(autostart=True)
     datacollector = DataCollector(display)
-    
 
-    try:
-        main(dataPath, datacollector, display)
-    except KeyboardInterrupt:
-        ## close all threads (hopefully)
-        Thread.shutdown()
+    main(dataPath, datacollector, display)

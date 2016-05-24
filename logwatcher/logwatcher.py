@@ -37,7 +37,7 @@ class LogWatcher(threading.Thread):
         super(LogWatcher, self).__init__()
 
         self.logEnding   = CONFIGURATION["logending"]
-        
+
         self._dataPath    = dataPath
         self._newestFile  = None
         self._currentFile = None
@@ -46,7 +46,7 @@ class LogWatcher(threading.Thread):
         self._currentData = []
 
         self._lock = threading.Lock()
-        
+
         self._watchLogs = True
         self.start()
 
@@ -93,5 +93,4 @@ class LogWatcher(threading.Thread):
         self._currentData = []
         self._lock.release()
 
-        return self._currentData
-
+        return result

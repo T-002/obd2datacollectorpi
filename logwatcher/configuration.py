@@ -22,8 +22,6 @@
 #IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 #CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-from os import getenv as _getenv
-
 CONFIGURATION = {
     ## ending for all log files
     "logending":  "log_v2"

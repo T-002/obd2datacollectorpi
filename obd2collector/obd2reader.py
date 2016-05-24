@@ -82,7 +82,7 @@ class OBD2Reader(object):
         :return:    Returns a list of OBD2 frames.
         :rtype:     List
         """
-        return [self.read_frame() for idx in xrange(nbrOfFrames)]
+        return [self.read_frame() for idx in range(nbrOfFrames)]
 
 import serial
 class SerialDataReader(OBD2Reader):
@@ -90,7 +90,7 @@ class SerialDataReader(OBD2Reader):
 
     def open_connection(self):
         """Opens a new serial connection."""
-        
+
         ## close already open connection
         if self._connected:
             self._rconnection.close()
@@ -103,13 +103,13 @@ class SerialDataReader(OBD2Reader):
 
         crCount = 3
         self.send_command("\r" * crCount)
-        
+
         ## set speed
         self.send_command(self._speed)
 
         ## disable timestamps
         self.send_command("Z0")
-        
+
         ## open the can
         self.send_command("O")
 
@@ -127,7 +127,7 @@ class SerialDataReader(OBD2Reader):
         """
         res = self._wconnection.write("%s\r" % command)
         return res == (len(command) + 1)
-        
+
     def read_frame(self):
         """Reads an OBD2 frame.
 
@@ -135,8 +135,8 @@ class SerialDataReader(OBD2Reader):
         :rtype:     String
         """
         read = self._rconnection.read
-        
-        ## read the first byte        
+
+        ## read the first byte
         frame = read()
 
         ## read the response identifier
@@ -151,17 +151,17 @@ class SerialDataReader(OBD2Reader):
             while rByte != "\r":
                 frame += rByte
                 rByte = read()
- 
+
             return frame
- 
+
         ## read the data length
         dataBytes = read()
         frame += dataBytes
-        
+
         ## read the data
         dataBytes = int(dataBytes)
         frame += read(2*dataBytes)
- 
+
         ## read the final \\r
         end = read()
         if "\r" != end:
@@ -171,7 +171,7 @@ class SerialDataReader(OBD2Reader):
 
 import bluetooth, time, sys
 class BluetoothDataReader(OBD2Reader):
-    
+
     def open_connection(self):
                 ## close already open connection
         if self._connected:
@@ -202,10 +202,10 @@ class BluetoothDataReader(OBD2Reader):
             except bluetooth.btcommon.BluetoothError, e:
                 socket = None
                 time.sleep(1)
-                
+
                 message = e.message[1:-1].split(",")
                 errorCode = int(message[0])
-                
+
                 ## something happened with the socket. A new socket should help
                 if errorCode == 77:
                     continue
@@ -237,32 +237,32 @@ class BluetoothDataReader(OBD2Reader):
                 print "Unknown Error"
                 print e
                 sys.exit()
-    
+
         self._display.write_message(["BT Connection OK"])
         print "BT Connection OK"
         return socket
-    
+
     def reconnect(self):
         self.send_command("Z")
         self.read_frame()
         self.read_frame()
         self.read_frame()
-        
+
         self.send_command("AL")
         self.read_frame()
         self.read_frame()
         self.read_frame()
-        
+
         #self.send_command("L1")
         #self.read_frame()
         #self.read_frame()
         #self.read_frame()
-        
+
         self.send_command("H1")
         self.read_frame()
         self.read_frame()
         self.read_frame()
-        
+
         self.send_command("S1")
         self.read_frame()
         self.read_frame()
@@ -277,12 +277,12 @@ class BluetoothDataReader(OBD2Reader):
         self.read_frame()
         self.read_frame()
         self.read_frame()
-        
+
         self.send_command("MA")
         self.read_frame()
         self.read_frame()
         self.read_frame()
-            
+
     def send_command(self, command, prefixAT=True):
         """Sends the given command to the adapter.
 
@@ -294,10 +294,10 @@ class BluetoothDataReader(OBD2Reader):
         """
         if prefixAT:
             command = "AT%s" % command
-        
+
         res = self._connection.send("%s\r" % command)
         return res == (len(command)) + 1
-    
+
     def read_frame(self):
         result = ""
         data = self._connection.recv(1)
@@ -313,35 +313,35 @@ class BluetoothDataReader(OBD2Reader):
             time.sleep(0.1)
             self.send_command("STCSWM3",  False)
             return self.read_frame()
-        
+
         return result
-    
+
 def main():
     from display import Display
 
     display = Display()
-    
+
     #reader = BluetoothDataReader("00:04:3E:26:08:CB", 1, display)
     reader = BluetoothDataReader("/dev/rfcomm99", 1, display)
 
     reader.open_connection()
-    
+
     while True:
         res = reader.read_frame()
-        
+
         if res == "\n":
             continue
-        
+
         print res
         continue
-    
+
         cmd = raw_input("Command: ")
-        
+
         if cmd != "read":
             if not reader.send_command(cmd):
                 print "Could not send command %s" % cmd
                 continue
-        
+
         print reader.read_frame()
 
 if __name__=="__main__":

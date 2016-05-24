@@ -33,23 +33,23 @@ class GPSReader(Thread):
     def __init__(self):
         """Initializes the GPSReader."""
         super(GPSReader, self).__init__()
-        
+
         ## read the GPS configuration
         self._gpsHost = CONFIGURATION["gpsdHost"]
         self._gpsdPort = CONFIGURATION["gpsdPort"]
         self.connect()
-        
+
         ## initialize the report list
         self._gpsLogEntries = []
-        
+
         ## start the thread
         self.start()
-    
+
     def connect(self):
         """Connects to the GPS Daemon."""
         self._session = gps.gps(self._gpsHost, self._gpsdPort)
         self._session.stream(gps.WATCH_ENABLE | gps.WATCH_JSON)
-    
+
     def _read_new_gps_entry(self):
         """Reads a new GPS entry from gpsd."""
         try:
@@ -57,27 +57,27 @@ class GPSReader(Thread):
         except:
             self.connect()
             return
-        
+
         self._lock.acquire()
         self._gpsLogEntries.append(gpsEntry)
         self._lock.release()
-    
+
     def _get_and_clear_gps_log(self):
         """Gets all recorded GPS log entries."""
         self._lock.acquire()
         gpsLogEntries = self._gpsLogEntries
         self._gpsLogEntries = []
         self._lock.release()
-        
+
         return [dict(gpsEntry) for gpsEntry in gpsLogEntries]
-    
+
     def run(self):
         """Runs the GPS Reader until :py:meth:`GPSReader.shutdown` is called."""
 
         while self._continueRunning:
             self._read_new_gps_entry()
             time.sleep(0.5)
-    
+
     def get_current_gps_entries(self):
         """Returns a list containin all collected GPS reports.
 
@@ -89,7 +89,7 @@ class GPSReader(Thread):
 if __name__=="__main__":
     ## create a GPSReader instance
     gpsr = GPSReader()
-    
+
     ## run for 30 seconds
     endTime = time.time() + 30
     while time.time() < endTime:

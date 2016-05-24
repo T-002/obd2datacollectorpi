@@ -38,7 +38,7 @@ class LogServer(object):
 		self._port = CONFIGURATION["logServerPort"]
 
         self._currentData = []
-		self._lock = threading.Lock()
+        self._lock = threading.Lock()
 
 	def add_entries(self, entries):
 		"""Adds the given entries to the current log data.

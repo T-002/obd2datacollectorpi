@@ -53,8 +53,8 @@ class Compressor(Thread):
 
         ## compress all remaining files
         self._lock.acquire()
-        
-        for f in self._filesToCompress:
+
+        for idx in range(len(self._filesToCompress)):
             filepath = self._filesToCompress[0]
             self._filesToCompress.remove(filepath)
             self._compress_file(filepath)

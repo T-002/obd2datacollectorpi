@@ -35,36 +35,36 @@ import time
 
 class Display(Thread):
     """A wrapper class for the connected LC display."""
-    
+
     def __init__(self, autostart=True):
         """Initializes the Display.
-        
+
         :param Bool autostart:    Defines, if the display should start to set messages automatically.
                                   Do not modify this parameter, unless you really know, what you are
                                   doing.
         """
         super(Display, self).__init__()
-        
+
         lcdclass = getattr(_lcdisplays, CONFIGURATION["displaytype"])
-        
+
         self._lcd = lcdclass(pin_rs=CONFIGURATION["pin_rs"],
                              pin_e=CONFIGURATION["pin_e"],
                              pins_db=CONFIGURATION["pins_db"]
         )
-        
+
         ## read the Display configuration
         self._width       = CONFIGURATION["width"]
         self._height      = CONFIGURATION["height"]
         self._refreshRate = CONFIGURATION["refreshRate"]
-        
+
         self._lcd.begin(self._width, self._height)
-        
+
         self._messages    = []
-        
+
         ## start the Thread
         if autostart:
             self.start()
-    
+
     def run(self):
         """Runs the Display thread until the Display is :py:meth:`Display.shutdown`."""
         while self._continueRunning:
@@ -79,10 +79,10 @@ class Display(Thread):
         self._lock.acquire()
         self._messages = messages
         self._lock.release()
-    
+
     def _show_message(self):
         """Displays the messages set by the last :py:meth:`Display.write_messages` call."""
-        
+
         self._lock.acquire()
         self._lcd.clear()
         message = self._lcd._get_screen_message([datetime.now().strftime("%b %d  %H:%M:%S UTC")] + self._messages)
@@ -93,7 +93,7 @@ class Display(Thread):
 if __name__=="__main__":
     ## read the script arguments and use them as messages
     messages = sys.argv[1:]
-    
+
     ## set the messages and force the display to show it directly
     display = Display(autostart=False)
     display.write_message(messages)

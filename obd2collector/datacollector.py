@@ -43,7 +43,7 @@ class DataCollector(object):
         :param Display display: Display that can be used to view messages.
         """
         super(DataCollector, self).__init__()
-        
+
         obd2readerClass  = getattr(obd2reader, CONFIGURATION["obd2reader"])
         self._obd2reader = obd2readerClass(CONFIGURATION["device"], CONFIGURATION["speed"], display)
         self._obd2reader.open_connection()
@@ -64,7 +64,7 @@ class DataCollector(object):
         """
         ## create the log file
         logf  = file(logFileName, "ab")
-        
+
         ## performance optimization
         ## reduces the __getattr__ calls for the major instances
         write      = logf.write
@@ -72,15 +72,15 @@ class DataCollector(object):
         obd2reader = self._obd2reader
 
         ## number of bytes written
-        bytes = 0
+        writtenBytes = 0
 
         ## collect the requested number of OBD2 frames
-        for idx in xrange(0, nbrOfOBDFrames, messagesPerTimestamp):
+        for idx in range(0, nbrOfOBDFrames, messagesPerTimestamp):
 
             ## time stamp
             timestamp = "#TIME__%s\n" % _getCurrentTime()
             write(timestamp)
-            bytes += len(timestamp)
+            writtenBytes += len(timestamp)
 
             ## read the number of frames requested
             try:
@@ -88,15 +88,15 @@ class DataCollector(object):
             except:
                 obd2reader.reconnect()
                 continue
-            
+
             ## store the frames in the log
             logEntries = "\n".join(logEntries)
             write("%s\n" % logEntries)
-            bytes += len(logEntries) + 1
+            writtenBytes += len(logEntries) + 1
 
             ## append the gpslog entries, when there are any
             gpsreports = ["#GPS__%s\n" % entry for entry in gpsreader.get_current_gps_entries()]
-            
+
             ## no GPS report collected since last run
             if not gpsreports:
                 continue
@@ -104,11 +104,11 @@ class DataCollector(object):
             ## store the reports in the log
             gpsreports = "\n".join(gpsreports)
             write("%s\n" % gpsreports)
-            bytes += len(gpsreports) + 1
+            writtenBytes += len(gpsreports) + 1
 
 
         # close the log file
         logf.close()
-        
+
         ## return the number of bytes written
-        return bytes
+        return writtenBytes

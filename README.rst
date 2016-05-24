@@ -1,5 +1,6 @@
 obd2datacollectorpi
 ===================
+![Landscape](https://landscape.io/github/T-002/obd2datacollectorpi/master/landscape.svg?style=flat)
 
 An OBD2 and GPS data logger using a Raspberry Pi.
 

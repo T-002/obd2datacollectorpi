@@ -11,3 +11,5 @@ Getting Started
    connecting_gps
    connecting_display
    connecting_pif7000
+
+   obdlinkmxwifi
